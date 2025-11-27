@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard System</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #e6ccff; /* light purple background for general page */
+    }
+
+    /* NAVBAR */
+    .navbar {
+        width: 100%;
+        padding: 15px 30px;
+        background: #8e58ff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .dashboard-label { 
+        padding: 10px 20px; 
+        background: #d1b3ff; 
+        color: black;
+        font-weight: bold;
+        font-size: 1.2em;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align: left;
+        margin-bottom: 0; 
+        pointer-events: none;
+    }
+
+    .about-btn {
+        padding: 10px 20px;
+        margin-left: 30px;
+        background: #d1b3ff; 
+        color: black; 
+        border-radius: 10px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-right: 50px; 
+    }
+
+    .about-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    }
+
+    /* SIDEBAR STYLES */
+    .sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #e0b4d9;
+        padding-top: 80px; 
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+
+    .sidebar-btn {
+        display: block;
+        padding: 15px 20px;
+        margin: 10px 15px;
+        background: #c299ff;
+        color: black;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .sidebar-btn:hover {
+        background: #b380ff;
+        transform: translateX(5px);
+    }
+
+    #dash:checked ~ .sidebar .home-btn {
+        background: #8e58ff;
+        color: white;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    /* PAGE CONTAINERS & RADIO BUTTONS */
+    .page {
+        display: none;
+        padding: 80px 50px 50px 270px; 
+    }
+
+    input[type="radio"] {
+        display: none;
+    }
+
+    #dash:checked ~ #dashboard,
+    #about:checked ~ #aboutus {
+        display: block;
+    }
+
+    /* DASHBOARD CONTENT STYLING */
+    #dashboard h1, #dashboard p {
+        padding: 10px 15px;
+        margin: 20px 0;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 8px solid #c299ff;
+
+        /* POP-UP EFFECT */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+    }
+
+    #dashboard h1:hover, #dashboard p:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+    }
+
+    #dashboard h1 {
+        border-left-color: #8e58ff;
+    }
+
+    /* CONTACT INFO STYLING */
+    .contact-info {
+        margin-top: 30px; 
+        padding: 20px; 
+        background-color: #f0e6ff; 
+        border-radius: 10px; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+        /* POP-UP EFFECT */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+    }
+
+    .contact-info:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+    }
+
+    .contact-info h2 {
+        color: #8e58ff;
+    }
+
+    /* ABOUT US PAGE STYLING */
+    #aboutus .container {
+        max-width: 900px; 
+        margin: 30px auto 0 auto;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 40px; 
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 10px solid #8e58ff; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        cursor: pointer; 
+    }
+
+    .profile-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.25); 
+    }
+
+    .profile-card .profile-header {
+        text-align: center;
+        padding-bottom: 10px;
+    }
+
+    .group {
+        font-size: 2.5em;
+        color: black; 
+        margin-bottom: 30px; 
+        background: #d1b3ff; 
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-left: 10px solid #8e58ff; 
+        box-sizing: border-box;
+    }
+
+    .profile-card img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #d1b3ff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+    }
+
+    .profile-card h1 {
+        font-size: 1.8em;
+        color: #333;
+        margin: 5px 0 0 0;
+        border-left: none; 
+        background: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .profile-card p {
+        font-style: italic;
+        color: #666;
+        margin: 5px 0;
+        padding: 0;
+        border-left: none; 
+        background: none;
+        box-shadow: none;
+    }
+
+    .profile-card .bio {
+        padding: 10px 20px;
+        text-align: left;
+    }
+
+    .profile-card .bio h2 {
+        color: #8e58ff;
+        border-bottom: 2px solid #d1b3ff;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
+    
+    .profile-card .bio p {
+        line-height: 1.6;
+        color: #555;
+        padding: 10px;
+        background-color: #f7f7f7;
+        border-left: 5px solid #c299ff;
+        border-radius: 5px;
+        text-align: left;
+        margin: 10px 0;
+    }
+
+    .profile-card hr {
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<input type="radio" name="page" id="dash" checked>
+<input type="radio" name="page" id="about">
+
+<div class="navbar">
+    <div class="dashboard-label">DASHBOARD</div> 
+    <label for="about" class="about-btn">About Us</label>
+</div>
+
+<div class="sidebar">
+    <label for="dash" class="sidebar-btn home-btn">Home Page</label>
+</div>
+
+<div class="page" id="dashboard">
+    <h1>Dashboard</h1>
+    <p>Welcome to the dashboard page! Enjoy your system.</p>
+    <p>You can enjoy our basic system that will tell us all about ourselves and what we want to be.</p>    
+    <p>This dashboard provides an overview of key information and metrics to help you stay informed and make better decisions. Here, you can quickly access updates, monitor performance, and explore detailed insights in an organized and user-friendly interface. Use the navigation tools to explore different sections and stay on top of your tasks and data.</p>
+    
+    <!-- Contact Info -->
+    <div class="contact-info">
+        <h2>Contact Information</h2>
+        <p><strong>Telephone:</strong> +63 9912249524</p>
+        <p><strong>Email:</strong> justinerhey03rodriguez@gmail.com</p>
+        <p><strong>School:</strong> Bestlink College of the Philippines</p>
+    </div>
+</div>
+
+<div class="page" id="aboutus">
+    <div class="container">
+        <h1 class="group">GROUP 3</h1> 
+        <br>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/owap.jpg" alt="picture" />
+                <h1>Rodriguez, Justine Rhey A.</h1>
+                <p>“Commit and Advance”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    I am Rodriguez, Justine Rhey A., 20 years old. All i need to say about my self
+                    is to follow my dreams and always focus each day to achieve my dreams perfectly. Do everything for me, 
+                    my family and my inspiration. E.I.V.</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/jc.jpeg" alt="profile" />
+                <h1>Avanceña, Justine Carl</h1>
+                <p>“Small progress every day leads to big achievements.”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    I am Justine Carl B. Avanceña, 21 years old, born on September 17, 2004.
+                    I live in Amabelle Homes, Caloocan City. I am currently taking BSIT at Bestlink College of the Philippines.
+                    My hobbies include playing games, reading books, listening to music, and cooking. 
+                    My skills are encoding, basic system handling, and cooking. I always aim to learn more and
+                    improve myself in the field of technology.
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/alexis.jpeg" alt="profile" />
+                <h1>Canja, Alexis</h1>
+                <p>Life is better when you cry a little, laugh a lot, 
+                and are thankful for everything you've got.</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    I am Alexis L. Canja, 19, born on December 13, 2005, Catholic, and 
+                    I live in Greenville, Bagumbong, Caloocan City. My hobbies are playing online games and 
+                    sometimes drawing anime. I enjoy exploring new places and now I'm busy with gym workouts.
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/zhaira.jpg" alt="profile" />
+                <h1>Lapastora, Zhaira Jane</h1>
+                <p>“Slowly building my dreams, line by line.”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    I am Zhaira Jane V. Lapastora, 19 years old, a BSIT student from Caloocan City.
+                    As a second-year student, I am still beginning to learn about IT.
+                    I’m interested in exploring different technology topics, especially those related to basic coding 
+                    and foundational IT skills. I enjoy learning new things while discovering which IT field I may pursue.
+                </p>
+            </div>
+        </div>
+
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/runa.png" alt="profile" />
+                <h1>Ruña, John Renz</h1>
+                <p>“The best way to predict the future is to invent it.”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    Hi, I'm John Renz V. Ruña, 19 years old, a BSIT student from Quezon City with a strong interest in technology.
+                    As a second-year student at BCP, I'm exploring the world of IT. Outside of school,
+                    I enjoy learning about gadgets and keeping up with tech trends.
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/tef.jpg" alt="profile" />
+                <h1>De lara, Tefanie Jane B.</h1>
+                <p> “Dream big. Stay focused. Work hard.”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>Hi! I’m Tefanie Jane B. De Lara from BSIT-22011, currently in my 2nd year. 
+                I love exploring the world of technology, especially topics about programming,
+                digital tools, and anything that helps improve creativity and productivity.
+                I’m excited to learn more and grow in the IT industry!</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/neng.jpg" alt="profile" />
+                <h1>Lanticse,Carla Nina P.</h1>
+                <p>“Keep fighting. You will achieve your dreams in life as long as you trust in God and take action.”</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    I am Carla Nina P. Lanticse, 21 years old, born on August 20, 2004. I live in Barangay San Isidro, Phase 1, Rodriguez, Rizal. 
+                    I am currently studying at Bestlink College of the Philippines, taking up the course Bachelor of Science in Information Technology (BSIT).
+                    Before, my hobbies were taekwondo and cooking, but now I just enjoy going out. I am still not fully aware of what my skills are, but I want to improve myself in many things.
+
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="./image/runa.png" alt="profile" />
+                <h1>Antonio, Froilan</h1>
+                <p>Short description about yourself.</p>
+            </div>
+            <div class="bio">
+                <h2>About Me</h2>
+                <p>
+                    Hi, I'm John Renz V. Ruña, 19 years old, a BSIT student from Quezon City with a strong interest in technology.
+                    As a second-year student at BCP, I'm exploring the world of IT. Outside of school,
+                    I enjoy learning about gadgets and keeping up with tech trends.
+                </p>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+</body>
+</html>
